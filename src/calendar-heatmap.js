@@ -20,6 +20,20 @@ function calendarHeatmap() {
   var onClick = null;
 
   // setters and getters
+  chart.width = function(value) {
+    if (!arguments.length) {
+      return width; }
+    width = value;
+    return chart;
+  };
+
+  chart.height = function(value) {
+    if (!arguments.length) {
+      return height; }
+    height = value;
+    return chart;
+  };
+
   chart.data = function (value) {
     if (!arguments.length) { return data; }
     data = value;
