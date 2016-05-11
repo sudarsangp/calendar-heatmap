@@ -18,6 +18,8 @@ function calendarHeatmap() {
   var tooltipUnit = 'contribution';
   var legendEnabled = true;
   var onClick = null;
+  var onMouseOver = null;
+  var onMouseOut = null;
 
   // setters and getters
   chart.width = function(value) {
@@ -76,6 +78,18 @@ function calendarHeatmap() {
     return chart;
   };
 
+  chart.onMouseOver = function (value) {
+    if (!arguments.length) { return onMouseOver(); }
+    onMouseOver = value;
+    return chart;
+  };
+
+  chart.onMouseOut = function (value) {
+    if (!arguments.length) { return onMouseOut(); }
+    onMouseOut = value;
+    return chart;
+  };
+
   function chart() {
 
     d3.select(chart.selector()).selectAll('svg.calendar-heatmap').remove(); // remove the existing chart, if it exists
@@ -125,7 +139,16 @@ function calendarHeatmap() {
         });
       }
 
-      if (chart.tooltipEnabled()) {
+      if (typeof onMouseOver === 'function' && typeof onMouseOut === 'function') {
+        dayRects.on('mouseover', function (d) {
+          var count = countForDate(d);
+          onMouseOver.call(this, { date: d, count: count});
+        })
+        .on('mouseout', function (d) {
+          var count = countForDate(d);
+          onMouseOut.call(this, { date: d, count: count});
+        });
+      } else if (chart.tooltipEnabled()) {
         dayRects.on('mouseover', function (d, i) {
           tooltip = d3.select('body')
             .append('div')
