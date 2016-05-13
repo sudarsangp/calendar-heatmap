@@ -108,12 +108,14 @@ function calendarHeatmap() {
     d3.select(chart.selector()).selectAll('svg.calendar-heatmap').remove(); // remove the existing chart, if it exists
     if(!chart.dateRange()) {
       dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range  
-    } else {
-      console.log('using date range: ' + dateRange[0] + ' ' + dateRange[1]);
     }
     var monthRange = d3.time.months(moment(dateRange[0]).startOf('month').toDate(), dateRange[dateRange.length - 1]); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
     var max = d3.max(chart.data(), function (d) { return d.count; }); // max data value
+    // handle exception when data is empty
+    if(!max) {
+      max = 10;
+    }
 
     // color range
     var color = d3.scale.linear()
@@ -142,7 +144,7 @@ function calendarHeatmap() {
         .enter().append('path')
         .attr('class', 'monthpath')
         .attr('d', monthPath);
-        
+
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
 
