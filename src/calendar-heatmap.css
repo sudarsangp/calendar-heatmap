@@ -2,6 +2,7 @@
   fill: none;
   stroke: #888888;
   stroke-width: 2px;
+  shape-rendering: crispedges;
 }
 text.month-name,
 text.calendar-heatmap-legend-text,
@@ -12,9 +13,10 @@ text.day-initial {
 }
 .day-cell {
   border: 1px solid gray;
+  shape-rendering: crispedges;
 }
 rect.day-cell:hover {
-  stroke: #555555;
+  stroke: #111111;
   stroke-width: 1px;
 }
 .day-cell-tooltip {

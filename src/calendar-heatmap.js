@@ -5,7 +5,8 @@ function calendarHeatmap() {
   var height = 110;
   var legendWidth = 165;
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  // var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var selector = 'body';
   var SQUARE_LENGTH = 11;
   var SQUARE_PADDING = 2;
@@ -132,6 +133,16 @@ function calendarHeatmap() {
         .attr('height', height)
         .style('padding', '18px 36px');
 
+      // month border
+      var year = dateRange[0].getFullYear();
+      svg.append('g')
+        .attr('transform', 'translate(-1,' + (MONTH_LABEL_PADDING-1) + ')')
+        .selectAll('.monthpath')
+        .data(d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)))
+        .enter().append('path')
+        .attr('class', 'monthpath')
+        .attr('d', monthPath);
+        
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
 
@@ -230,25 +241,14 @@ function calendarHeatmap() {
           .attr('y', 0);  // fix these to the top
 
       days.forEach(function (day, index) {
-        if (index % 2) {
-          svg.append('text')
-            .attr('class', 'day-initial')
-            .attr('transform', 'translate(-8,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
-            .style('text-anchor', 'middle')
-            .attr('dy', '2')
-            .text(day);
-        }
+        svg.append('text')
+          .attr('class', 'day-initial')
+          .attr('transform', 'translate(-8,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
+          .style('text-anchor', 'end')
+          .attr('dy', '2')
+          .text(day);
       });
 
-      // month border
-      var year = dateRange[0].getFullYear();
-      svg.append('g')
-        .attr('transform', 'translate(-1,' + (MONTH_LABEL_PADDING-1) + ')')
-        .selectAll('.monthpath')
-        .data(d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)))
-        .enter().append('path')
-        .attr('class', 'monthpath')
-        .attr('d', monthPath);
     }
 
     function tooltipHTMLForDate(d) {
