@@ -104,11 +104,20 @@ function calendarHeatmap() {
   };
 
   function chart() {
-
     d3.select(chart.selector()).selectAll('svg.calendar-heatmap').remove(); // remove the existing chart, if it exists
     if(!chart.dateRange()) {
       dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range  
     }
+
+    // remove data outside the date range
+    var start = dateRange[0];
+    var end = dateRange[dateRange.length - 1];
+    function withinRange(d) {
+      return (d.date > start || d.date.getTime() === start.getTime()) && 
+      (d.date < end || d.date.getTime() === end.getTime());
+    }
+    data = data.filter(withinRange);
+
     var monthRange = d3.time.months(moment(dateRange[0]).startOf('month').toDate(), dateRange[dateRange.length - 1]); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
     var max = d3.max(chart.data(), function (d) { return d.count; }); // max data value
@@ -221,6 +230,26 @@ function calendarHeatmap() {
           .text('More');
       }
 
+      var daysOfChart = chart.data().map(function(day){
+        return day.date.toDateString();
+      });
+
+      // color future dates using light color and prevent user interactions on them
+      dayRects.filter(function(d) {
+          return d > now;
+        })
+        .attr('fill', futureColor)
+        .on('mouseover', null)
+        .on('mouseout', null)
+        .style('pointer-events', 'none');
+      
+      dayRects.filter(function(d) {
+        return daysOfChart.indexOf(d.toDateString()) > -1;
+        })
+        .attr('fill', function(d, i) {
+          return chart.data()[i].count ? color(chart.data()[i].count) : zeroColor;
+        });
+
       dayRects.exit().remove();
       var monthLabels = svg.selectAll('.month')
           .data(monthRange)
@@ -269,25 +298,6 @@ function calendarHeatmap() {
       }
       return count;
     }
-
-    var daysOfChart = chart.data().map(function(day){
-      return day.date.toDateString();
-    });
-    // color future dates using light color and prevent user interactions on them
-    dayRects.filter(function(d) {
-        return d > now;
-      })
-      .attr('fill', futureColor)
-      .on('mouseover', null)
-      .on('mouseout', null)
-      .style('pointer-events', 'none');
-    
-    dayRects.filter(function(d) {
-      return daysOfChart.indexOf(d.toDateString()) > -1;
-      })
-      .attr('fill', function(d, i) {
-        return chart.data()[i].count ? color(chart.data()[i].count) : zeroColor;
-      });
 
     // https://bl.ocks.org/mbostock/4063318 MAGIC
     function monthPath(t0) {
