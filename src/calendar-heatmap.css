@@ -1,3 +1,8 @@
+.monthpath {
+  fill: none;
+  stroke: #888888;
+  stroke-width: 2px;
+}
 text.month-name,
 text.calendar-heatmap-legend-text,
 text.day-initial {

@@ -3,7 +3,7 @@ function calendarHeatmap() {
   // defaults
   var width = 750;
   var height = 110;
-  var legendWidth = 150;
+  var legendWidth = 165;
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   var selector = 'body';
@@ -13,15 +13,27 @@ function calendarHeatmap() {
   var now = moment().endOf('day').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
   var data = [];
-  var colorRange = ['#D8E6E7', '#218380'];
+  var colorRange = ['#bcd9d8', '#218380'];
   var tooltipEnabled = true;
   var tooltipUnit = 'contribution';
   var legendEnabled = true;
   var onClick = null;
   var onMouseOver = null;
   var onMouseOut = null;
+  var dateRange;
+
+  var blankColor = '#d6d6d6';
+  var zeroColor = '#d6d6d6';
+  var futureColor = '#eee';
 
   // setters and getters
+  chart.dateRange = function(value) {
+    if (!arguments.length) {
+      return dateRange; }
+    dateRange = value;
+    return chart;
+  };
+
   chart.width = function(value) {
     if (!arguments.length) {
       return width; }
@@ -93,9 +105,12 @@ function calendarHeatmap() {
   function chart() {
 
     d3.select(chart.selector()).selectAll('svg.calendar-heatmap').remove(); // remove the existing chart, if it exists
-
-    var dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range
-    var monthRange = d3.time.months(moment(yearAgo).startOf('month').toDate(), now); // it ignores the first month if the 1st date is after the start of the month
+    if(!chart.dateRange()) {
+      dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range  
+    } else {
+      console.log('using date range: ' + dateRange[0] + ' ' + dateRange[1]);
+    }
+    var monthRange = d3.time.months(moment(dateRange[0]).startOf('month').toDate(), dateRange[dateRange.length - 1]); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
     var max = d3.max(chart.data(), function (d) { return d.count; }); // max data value
 
@@ -115,7 +130,7 @@ function calendarHeatmap() {
         .attr('width', width)
         .attr('class', 'calendar-heatmap')
         .attr('height', height)
-        .style('padding', '36px');
+        .style('padding', '18px 36px');
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
@@ -124,7 +139,7 @@ function calendarHeatmap() {
         .attr('class', 'day-cell')
         .attr('width', SQUARE_LENGTH)
         .attr('height', SQUARE_LENGTH)
-        .attr('fill', 'gray')
+        .attr('fill', blankColor)
         .attr('x', function (d, i) {
           var cellDate = moment(d);
           var result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));
@@ -163,7 +178,7 @@ function calendarHeatmap() {
       }
 
       if (chart.legendEnabled()) {
-        var colorRange = [color(0)];
+        var colorRange = [zeroColor, color(0)];
         for (var i = 3; i > 0; i--) {
           colorRange.push(color(max / i));
         }
@@ -208,8 +223,9 @@ function calendarHeatmap() {
               matchIndex = index;
               return moment(d).isSame(element, 'month') && moment(d).isSame(element, 'year');
             });
-
-            return Math.floor(matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);
+            // center month label in month box
+            var startPos = (matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);
+            return startPos + (SQUARE_LENGTH + SQUARE_PADDING) * 2.5;
           })
           .attr('y', 0);  // fix these to the top
 
@@ -223,6 +239,16 @@ function calendarHeatmap() {
             .text(day);
         }
       });
+
+      // month border
+      var year = dateRange[0].getFullYear();
+      svg.append('g')
+        .attr('transform', 'translate(-1,' + (MONTH_LABEL_PADDING-1) + ')')
+        .selectAll('.monthpath')
+        .data(d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)))
+        .enter().append('path')
+        .attr('class', 'monthpath')
+        .attr('d', monthPath);
     }
 
     function tooltipHTMLForDate(d) {
@@ -245,11 +271,34 @@ function calendarHeatmap() {
     var daysOfChart = chart.data().map(function(day){
       return day.date.toDateString();
     });
-    dayRects.filter(function (d) {
+    // color future dates using light color and prevent user interactions on them
+    dayRects.filter(function(d) {
+        return d > now;
+      })
+      .attr('fill', futureColor)
+      .on('mouseover', null)
+      .on('mouseout', null)
+      .style('pointer-events', 'none');
+    
+    dayRects.filter(function(d) {
       return daysOfChart.indexOf(d.toDateString()) > -1;
-    }).attr('fill', function (d, i) {
-      return chart.data()[i].count?color(chart.data()[i].count):'gray';
-    });
+      })
+      .attr('fill', function(d, i) {
+        return chart.data()[i].count ? color(chart.data()[i].count) : zeroColor;
+      });
+
+    // https://bl.ocks.org/mbostock/4063318 MAGIC
+    function monthPath(t0) {
+      var cellSize = SQUARE_LENGTH + SQUARE_PADDING;
+      var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
+          d0 = t0.getDay(), w0 = d3.time.weekOfYear(t0),
+          d1 = t1.getDay(), w1 = d3.time.weekOfYear(t1);
+      return 'M' + (w0 + 1) * cellSize + ',' + d0 * cellSize +
+          'H' + w0 * cellSize + 'V' + 7 * cellSize +
+          'H' + w1 * cellSize + 'V' + (d1 + 1) * cellSize +
+          'H' + (w1 + 1) * cellSize + 'V' + 0 +
+          'H' + (w0 + 1) * cellSize + 'Z';
+    }
   }
 
   return chart;
