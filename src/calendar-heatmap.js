@@ -29,22 +29,19 @@ function calendarHeatmap() {
 
   // setters and getters
   chart.dateRange = function(value) {
-    if (!arguments.length) {
-      return dateRange; }
+    if (!arguments.length) { return dateRange; }
     dateRange = value;
     return chart;
   };
 
   chart.width = function(value) {
-    if (!arguments.length) {
-      return width; }
+    if (!arguments.length) { return width; }
     width = value;
     return chart;
   };
 
   chart.height = function(value) {
-    if (!arguments.length) {
-      return height; }
+    if (!arguments.length) { return height; }
     height = value;
     return chart;
   };
@@ -86,19 +83,19 @@ function calendarHeatmap() {
   };
 
   chart.onClick = function (value) {
-    if (!arguments.length) { return onClick(); }
+    if (!arguments.length) { return onClick; }
     onClick = value;
     return chart;
   };
 
   chart.onMouseOver = function (value) {
-    if (!arguments.length) { return onMouseOver(); }
+    if (!arguments.length) { return onMouseOver; }
     onMouseOver = value;
     return chart;
   };
 
   chart.onMouseOut = function (value) {
-    if (!arguments.length) { return onMouseOut(); }
+    if (!arguments.length) { return onMouseOut; }
     onMouseOut = value;
     return chart;
   };
@@ -112,11 +109,11 @@ function calendarHeatmap() {
     // remove data outside the date range
     var start = dateRange[0];
     var end = dateRange[dateRange.length - 1];
-    function withinRange(d) {
+
+    data = data.filter(function(d) {
       return (d.date > start || d.date.getTime() === start.getTime()) && 
       (d.date < end || d.date.getTime() === end.getTime());
-    }
-    data = data.filter(withinRange);
+    });
 
     var monthRange = d3.time.months(moment(dateRange[0]).startOf('month').toDate(), dateRange[dateRange.length - 1]); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
@@ -168,12 +165,10 @@ function calendarHeatmap() {
 
       if (typeof onMouseOver === 'function' && typeof onMouseOut === 'function') {
         dayRects.on('mouseover', function (d) {
-          var count = countForDate(d);
-          onMouseOver.call(this, { date: d, count: count});
+          onMouseOver.call(this, { date: d, count: countForDate(d)});
         })
         .on('mouseout', function (d) {
-          var count = countForDate(d);
-          onMouseOut.call(this, { date: d, count: count});
+          onMouseOut.call(this, { date: d, count: countForDate(d)});
         });
       } else if (chart.tooltipEnabled()) {
         dayRects.on('mouseover', function (d, i) {

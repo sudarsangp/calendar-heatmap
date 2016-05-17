@@ -1,4 +1,10 @@
 # D3 Calendar Heatmap
+
+This repo is forked from [calendar-heatmap](https://github.com/DKirwan/calendar-heatmap), with a few additional features and modificaitons:
+* Support custom mouseover and mouseout event handlers
+* Support custom date range (using start and end dates)
+* UI and color scheme changes
+
 A [d3.js](https://d3js.org/) heatmap representing time series data. Inspired by Github's contribution chart
 
 ![Reusable D3.js Calendar Heatmap chart](https://raw.githubusercontent.com/DKirwan/calendar-heatmap/develop/example/thumbnail.png)
@@ -6,9 +12,9 @@ A [d3.js](https://d3js.org/) heatmap representing time series data. Inspired by 
 ## TODO
 
 * ~~Enable/disable tooltip~~
-* Editing of tooltip text
+* ~~Editing of tooltip text~~
 * ~~Editing of the cell gradient colours~~
-* Configuration of the start/end dates
+* ~~Configuration of the start/end dates~~
 * ~~Add optional callback for click events on the day cells~~
 * ~~Add project to bower~~
 * Remove example and vendor folders to separate `gh-pages` branch
@@ -49,12 +55,21 @@ var chartData = [{
 }];
 var chart1 = calendarHeatmap()
               .data(chartData)
+              .dateRange(d3.time.days(new Date(2016, 0, 1), new Date(2017, 0, 1))
               .selector('#chart-one')
               .colorRange(['#D8E6E7', '#218380'])
               .tooltipEnabled(true)
               .onClick(function (data) {
                 console.log('onClick callback. Data:', data);
-              });
+              })
+              .onMouseOver(function(data) {
+              	// you can access the element via this
+		        console.log('onMouseOver callback. Data:', data);
+		      })
+		      .onMouseOut(function(data) {
+		      	// you can access the element via this
+		        console.log('onMouseOut callback. Data:', data);
+		      });
 chart1();  // render the chart
 ```
 
