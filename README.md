@@ -1,6 +1,7 @@
 # D3 Calendar Heatmap
 
 This repo is forked from [calendar-heatmap](https://github.com/DKirwan/calendar-heatmap), with a few additional features and modificaitons:
+
 * Support custom mouseover and mouseout event handlers
 * Support custom date range (using start and end dates)
 * UI and color scheme changes
@@ -24,11 +25,14 @@ A [d3.js](https://d3js.org/) heatmap representing time series data. Inspired by 
 |Property        | Usage           | Default  | Required |
 |:------------- |:-------------|:-----:|:-----:|
 | data | Chart data | none | yes |
+| dateRange | Array of continuous dates from start to end (see example below) | a year ago to now | no |
 | selector | DOM selector to attach the chart to | body | no |
 | colorRange | Minimum and maximum chart gradient colors | ['#D8E6E7', '#218380'] | no |
 | tooltipEnabled | Option to render a tooltip | true | no |
 | legendEnabled | Option to render a legend | true | no |
 | onClick | callback function on day click events (see example below) | null | no |
+| onMouseOver | callback function on day mouseover events (see example below) | null | no |
+| onMouseOut | callback function on day mouseout events (see example below) | null | no |
 
 ## Dependencies
 
