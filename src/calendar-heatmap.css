@@ -1,7 +1,7 @@
 .monthpath {
   fill: none;
   stroke: #888888;
-  stroke-width: 2px;
+  stroke-width: 1px;
   shape-rendering: crispedges;
 }
 text.month-name,
@@ -11,10 +11,16 @@ text.day-initial {
   fill: #aaaaaa;
   font-family: Helvetica, arial, 'Open Sans', sans-serif
 }
-.day-cell {
-  border: 1px solid gray;
+rect.day-cell {
   shape-rendering: crispedges;
 }
+
+.day-cell.future {
+  stroke: none;
+  stroke-width: 0;
+  shape-rendering: crispedges;
+}
+
 rect.day-cell:hover {
   stroke: #111111;
   stroke-width: 1px;

@@ -8,8 +8,8 @@ function calendarHeatmap() {
   // var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var selector = 'body';
-  var SQUARE_LENGTH = 11;
-  var SQUARE_PADDING = 2;
+  var SQUARE_LENGTH = 12;
+  var SQUARE_PADDING = 1;
   var MONTH_LABEL_PADDING = 6;
   var now = moment().endOf('day').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
@@ -23,9 +23,9 @@ function calendarHeatmap() {
   var onMouseOut = null;
   var dateRange;
 
-  var blankColor = '#d6d6d6';
-  var zeroColor = '#d6d6d6';
-  var futureColor = '#eee';
+  var blankColor = '#fbfcfc';
+  var zeroColor = '#fbfcfc';
+  var futureColor = '#f1f2f3';
 
   // setters and getters
   chart.dateRange = function(value) {
@@ -144,16 +144,6 @@ function calendarHeatmap() {
         .attr('height', height)
         .style('padding', '18px 36px');
 
-      // month border
-      var year = dateRange[0].getFullYear();
-      svg.append('g')
-        .attr('transform', 'translate(-1,' + (MONTH_LABEL_PADDING-1) + ')')
-        .selectAll('.monthpath')
-        .data(d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)))
-        .enter().append('path')
-        .attr('class', 'monthpath')
-        .attr('d', monthPath);
-
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
 
@@ -241,6 +231,7 @@ function calendarHeatmap() {
         .attr('fill', futureColor)
         .on('mouseover', null)
         .on('mouseout', null)
+        .classed('future', true)
         .style('pointer-events', 'none');
       
       dayRects.filter(function(d) {
@@ -279,6 +270,16 @@ function calendarHeatmap() {
           .attr('dy', '2')
           .text(day);
       });
+
+      // month border
+      var year = dateRange[0].getFullYear();
+      svg.append('g')
+        .attr('transform', 'translate(-1,' + (MONTH_LABEL_PADDING-1) + ')')
+        .selectAll('.monthpath')
+        .data(d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)))
+        .enter().append('path')
+        .attr('class', 'monthpath')
+        .attr('d', monthPath);
 
     }
 
