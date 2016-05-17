@@ -67,13 +67,13 @@ var chart1 = calendarHeatmap()
                 console.log('onClick callback. Data:', data);
               })
               .onMouseOver(function(data) {
-              	// you can access the element via this
-		        console.log('onMouseOver callback. Data:', data);
-		      })
-		      .onMouseOut(function(data) {
-		      	// you can access the element via this
-		        console.log('onMouseOut callback. Data:', data);
-		      });
+                // you can access the element via this
+                console.log('onMouseOver callback. Data:', data);
+              })
+              .onMouseOut(function(data) {
+                // you can access the element via this
+                console.log('onMouseOut callback. Data:', data);
+              });
 chart1();  // render the chart
 ```
 
