@@ -3,7 +3,7 @@ function calendarHeatmap() {
   // defaults
   var width = 750;
   var height = 110;
-  var legendWidth = 165;
+  var legendWidth = 125;
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   // var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -198,7 +198,7 @@ function calendarHeatmap() {
             .attr('class', 'calendar-heatmap-legend')
             .attr('width', SQUARE_LENGTH)
             .attr('height', SQUARE_LENGTH)
-            .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * 13; })
+            .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * (SQUARE_LENGTH + 2); })
             .attr('y', height + SQUARE_PADDING)
             .attr('fill', function (d) { return d; });
 
@@ -210,7 +210,7 @@ function calendarHeatmap() {
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * 13)
+          .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * (SQUARE_LENGTH + 2))
           .attr('y', height + SQUARE_LENGTH)
           .text('More');
       }
