@@ -8,7 +8,7 @@ function calendarHeatmap() {
   // var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var selector = 'body';
-  var SQUARE_LENGTH = 12;
+  var SQUARE_LENGTH = 13;
   var SQUARE_PADDING = 1;
   var MONTH_LABEL_PADDING = 6;
   var now = moment().endOf('day').toDate();
