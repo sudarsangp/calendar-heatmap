@@ -158,19 +158,16 @@ function calendarHeatmap() {
 
       if (typeof onClick === 'function') {
         dayRects.on('click', function (d) {
-          var data = dataForDate(d);
-          onClick(data);
+          onClick(dataForDate(d));
         });
       }
 
       if (typeof onMouseOver === 'function' && typeof onMouseOut === 'function') {
         dayRects.on('mouseover', function (d) {
-          var data = dataForDate(d);
-          onMouseOver.call(this, data);
+          onMouseOver.call(this, dataForDate(d));
         })
         .on('mouseout', function (d) {
-          var data = dataForDate(d);
-          onMouseOut.call(this, data);
+          onMouseOut.call(this, dataForDate(d));
         });
       } else if (chart.tooltipEnabled()) {
         dayRects.on('mouseover', function (d, i) {
