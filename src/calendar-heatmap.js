@@ -158,17 +158,19 @@ function calendarHeatmap() {
 
       if (typeof onClick === 'function') {
         dayRects.on('click', function (d) {
-          var count = countForDate(d);
-          onClick({ date: d, count: count});
+          var data = dataForDate(d);
+          onClick(data);
         });
       }
 
       if (typeof onMouseOver === 'function' && typeof onMouseOut === 'function') {
         dayRects.on('mouseover', function (d) {
-          onMouseOver.call(this, { date: d, count: countForDate(d)});
+          var data = dataForDate(d);
+          onMouseOver.call(this, data);
         })
         .on('mouseout', function (d) {
-          onMouseOut.call(this, { date: d, count: countForDate(d)});
+          var data = dataForDate(d);
+          onMouseOut.call(this, data);
         });
       } else if (chart.tooltipEnabled()) {
         dayRects.on('mouseover', function (d, i) {
@@ -219,9 +221,9 @@ function calendarHeatmap() {
         return day.date.toDateString();
       });
 
-      // color future dates using light color and prevent user interactions on them
+      // color future dates with no data using light color and prevent user interactions on them
       dayRects.filter(function(d) {
-          return d > now;
+          return d > now && daysOfChart.indexOf(d.toDateString()) <= -1;
         })
         .attr('fill', futureColor)
         .on('mouseover', null)
@@ -280,19 +282,22 @@ function calendarHeatmap() {
 
     function tooltipHTMLForDate(d) {
       var dateStr = moment(d).format('ddd, MMM Do YYYY');
-      var count = countForDate(d);
+      var data = dataForDate(d);
+      var count = data.count;
       return '<span><strong>' + (count ? count : 'No') + tooltipUnit + (count === 1 ? '' : 's') + '</strong> on ' + dateStr + '</span>';
     }
 
-    function countForDate(d) {
-      var count = 0;
+    function dataForDate(d) {
       var match = chart.data().find(function (element, index) {
         return moment(element.date).isSame(d, 'day');
       });
       if (match) {
-        count = match.count;
+        return match;
       }
-      return count;
+      return {
+        date: d,
+        count: 0
+      };
     }
 
     // https://bl.ocks.org/mbostock/4063318 MAGIC
