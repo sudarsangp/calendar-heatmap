@@ -11,7 +11,7 @@ function calendarHeatmap() {
   var SQUARE_LENGTH = 13;
   var SQUARE_PADDING = 1;
   var MONTH_LABEL_PADDING = 6;
-  var yesterday = moment().add(-1, 'days').endOf('day').toDate();
+  var yesterday = moment().endOf('day').subtract(1, 'days').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
   var data = [];
   var colorRange = ['#bcd9d8', '#218380'];
